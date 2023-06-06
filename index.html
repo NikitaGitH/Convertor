@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        background-color: white;
+    }
+    .flex__wrapper{
+        border: 1px solid #DFC702;
+        width: 800px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        margin: auto;
+        padding: 20px;
+        color: #DFC702;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 5px;
+        box-shadow: 0px 0px 9px 2px rgba(34, 60, 80, 0.2);
+    }
+    .btn{
+        display: block;
+        margin: auto;
+        border-radius: 5px;
+        background-color: darkseagreen;
+        width: 100px;
+        height: 40px;
+        color: white;
+        border: 2px solid #DFC702;
+    }
+    .btn:hover{
+        border: 2px solid black;
+    }
+    .sel1{
+        border-color: #DFC702;
+        margin-left: 20px;
+    }
+    .sel2{
+        border-color: #DFC702;
+        margin-left: 20px;
+    }
+    #inp{
+        margin-left: 55px;
+        border: 1px solid #DFC702;
+    }
+    #price{
+        color: black;
+        margin-left: 20px;
+    }
+    .cards{
+        display: flex;
+        width: 820px;
+        color: #DFC702;
+        font-size: 20px;
+        font-weight: bold;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 50px;
+        flex-wrap: wrap;
+        list-style: none;
+        justify-content: space-between;
+        padding: 0;
+    }
+    .card__title{
+        text-align: center;
+        color: #DFC702;
+    }
+    .card__price{
+        color: #DFC702;
+        text-align: center;
+    }
+    .card__price__title{
+        color:rgb(156, 156, 156);
+        margin-top: 20px;
+    }
+    .card{
+        border: 1px solid #DFC702;
+        padding: 20px;
+        border-radius: 5px;
+        margin-top: 20px;
+        width: 300px;
+        box-shadow: 0px 0px 9px 2px rgba(34, 60, 80, 0.2);
+    }
+    @media(max-width: 900px){
+        .cards{
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: auto;
+        }
+        .flex__wrapper{
+            width: auto;
+            margin: auto;
+        }
+    }
+    @media(max-width: 550px){
+        .sel1{
+            width: 200px;
+        }
+        .sel2{
+            width: 200px;
+        }
+        .flex__wrapper{
+            font-size: 18px;
+        }
+    }
+    @media(max-width: 430px){
+        #price1{
+            text-align: center;
+        }
+        #inp{
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .first__container{
+            text-align: center;
+        }
+        .sel1{
+            margin-top: 5px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .second__container{
+            text-align: center;
+        }
+        .sel2{
+            margin-top: 5px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+</style>
+<body>
+    <div class="flex__wrapper">
+        <div class="first__container">
+            <p>Первая валюта: <select name="" class="sel1" id="sel1"></select></p>
+            <p id="price1">Количество: <input id="inp"></p>
+        </div>
+        <div class="second__container">
+            <p>Первая валюта: <select name="" class="sel2" id="sel2"></select></p>
+            <p id="price2">Стоимость: <span id="price"></span></p>
+        </div>
+        <button class="btn" id="btn">Перевести</button>            
+    </div>
+    <ul class="cards" id="cards"></ul>
+
+
+    <script>
+        let xhr = new XMLHttpRequest()
+        xhr.open('GET', 'https://www.cbr-xml-daily.ru/daily_json.js')
+        xhr.send()
+        xhr.addEventListener('readystatechange', function(){
+            if(xhr.status === 200 && xhr.readyState === 4){
+                const res = JSON.parse(xhr.responseText).Valute
+                console.log(res)
+                let keys = Object.keys(res)
+                for(let keys in res){
+                    //Заполнение sellect'ов
+                    let option1 = document.createElement('option')
+                    option1.value = res[keys].Value
+                    option1.innerHTML = res[keys].Name
+                    let option = document.createElement('option')
+                    option.value = res[keys].Value
+                    option.innerHTML = res[keys].Name
+                    sel1.appendChild(option1)
+                    sel2.appendChild(option)
+                    price.innerHTML = '1'
+                    inp.value = '1'
+
+                    //Создание карточек
+                    let card = document.createElement('li')
+                    card.classList.add('card')
+                    card.innerHTML = `<div class="card__title">${res[keys].CharCode}</div><div class="card__price__title">Стоимость в рублях: <span class="card__price">${res[keys].Value}</span></div>`
+                    cards.appendChild(card)
+
+                    card.addEventListener('click', function(){
+                        sel1.value = res[keys].Value
+                        console.log(sel1.value)
+                        console.log(card.value)
+                    })
+                }
+                let option = document.createElement('option')
+                option.value = 1
+                option.innerHTML = 'Российский рубль'
+                sel1.appendChild(option)
+                option = document.createElement('option')
+                option.value = 1
+                option.innerHTML = 'Российский рубль'
+                sel2.appendChild(option)
+
+                btn.addEventListener('click', function(){
+                    let priceFixer = ((inp.value)*sel1.value/sel2.value)
+                    price.innerHTML = priceFixer.toFixed(2)
+                    
+                })
+            }
+        })
+    </script>
+</body>
+</html>
